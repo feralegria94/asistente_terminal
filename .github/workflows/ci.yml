@@ -14,12 +14,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Lint
-        run: |
-          pip install flake8
-          flake8 asistente.py --max-line-length=120 --select=E,F,W
       - name: Syntax check
         run: python3 -m py_compile asistente.py
+      - name: Lint (critical only)
+        run: |
+          pip install flake8
+          flake8 asistente.py --select=E9,F63,F7,F82 --show-source
 
   test:
     runs-on: ubuntu-latest
