@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Lint
+        run: |
+          pip install flake8
+          flake8 asistente.py --max-line-length=120 --select=E,F,W
+      - name: Syntax check
+        run: python3 -m py_compile asistente.py
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run CLI tests
+        run: |
+          python3 asistente.py version
+          python3 asistente.py ayuda
+          python3 asistente.py listar .
+          python3 asistente.py buscar README
+          echo "test" > /tmp/test_ci.txt
+          python3 asistente.py renombrar /tmp/test_ci.txt /tmp/test_ci2.txt
+          test -f /tmp/test_ci2.txt
